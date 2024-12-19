@@ -1,10 +1,10 @@
 'use server';
 
-import {auth, signIn, signOut} from "@/app/_lib/auth";
-import {supabase} from "@/app/_lib/supabase";
-import {revalidatePath} from "next/cache";
-import {getBookings} from "@/app/_lib/data-service";
-import {redirect} from "next/navigation";
+import { auth, signIn, signOut } from "@/app/_lib/auth";
+import { supabase } from "@/app/_lib/supabase";
+import { revalidatePath } from "next/cache";
+import { getBookings } from "@/app/_lib/data-service";
+import { redirect } from "next/navigation";
 
 export async function updateProfile(formData) {
     const session = await auth();
@@ -14,10 +14,10 @@ export async function updateProfile(formData) {
     const [nationality, country_flag] = formData.get('nationality').split('%');
     if (!/^[a-zA-Z0-9]{6,12}$/.test(national_id)) throw new Error('Please provide a valid national ID');
 
-    const updateData = {nationality, country_flag, national_id};
+    const updateData = { nationality, country_flag, national_id };
 
     const { data, error } = await supabase
-        .from('guests')
+        .from('two_guests')
         .update(updateData)
         .eq('id', session.user.guest_id);
     if (error) throw new Error('Guest could not be updated');
@@ -39,7 +39,7 @@ export async function deleteReservation(bookingId) {
         throw new Error("You are not allowed to delete this booking");
 
     const { error } = await supabase
-        .from("bookings")
+        .from("two_bookings")
         .delete()
         .eq("id", bookingId);
 
@@ -69,8 +69,8 @@ export async function updateBooking(formData) {
     }
 
     // 4) update mutation
-    const {error} = await supabase
-        .from('bookings')
+    const { error } = await supabase
+        .from('two_bookings')
         .update(updateData)
         .eq('id', bookingId)
         .select()
@@ -105,8 +105,8 @@ export async function createBooking(bookingData, formData) {
 
     // console.log(newBooking);
 
-    const {error} = await supabase
-        .from('bookings')
+    const { error } = await supabase
+        .from('two_bookings')
         .insert([newBooking])
 
     if (error) throw new Error('Booking could not be created');
