@@ -1,7 +1,7 @@
 import UpdateProfileForm from "@/app/_components/UpdateProfileForm";
 import SelectCountry from "@/app/_components/SelectCountry";
-import {auth} from "@/app/_lib/auth";
-import {getGuest} from "@/app/_lib/data-service";
+import { auth } from "@/app/_lib/auth";
+import { getGuest } from "@/app/_lib/data-service";
 
 export const metadata = {
     title: 'Profile | Account',
@@ -29,7 +29,7 @@ export default async function ProfilePage() {
                     name="nationality"
                     id="nationality"
                     className="px-5 py-3 bg-primary-200 text-primary-800 w-full shadow-sm rounded-sm"
-                    defaultCountry={guest.nationality}
+                    defaultCountry={'portugal'}
                 />
             </UpdateProfileForm>
         </div>

@@ -1,5 +1,5 @@
-import {PencilSquareIcon} from '@heroicons/react/24/solid';
-import {format, formatDistance, isPast, isToday, parseISO} from 'date-fns';
+import { PencilSquareIcon } from '@heroicons/react/24/solid';
+import { format, formatDistance, isPast, isToday, parseISO } from 'date-fns';
 import DeleteReservation from "@/app/_components/DeleteReservation";
 import Image from "next/image";
 import Link from "next/link";
@@ -9,7 +9,7 @@ export const formatDistanceFromNow = (dateStr) =>
         addSuffix: true,
     }).replace('about ', '');
 
-function ReservationCard({booking, onDelete}) {
+function ReservationCard({ booking, onDelete }) {
     const {
         id,
         guest_id,
@@ -20,7 +20,7 @@ function ReservationCard({booking, onDelete}) {
         num_guests,
         status,
         created_at,
-        cabins: {name, image},
+        two_cabins: { name, image },
     } = booking;
 
     return (
@@ -42,13 +42,13 @@ function ReservationCard({booking, onDelete}) {
                     {isPast(new Date(start_date)) ? (
                         <span
                             className='bg-yellow-800 text-yellow-200 h-7 px-3 uppercase text-xs font-bold flex items-center rounded-sm'>
-              past
-            </span>
+                            past
+                        </span>
                     ) : (
                         <span
                             className='bg-green-800 text-green-200 h-7 px-3 uppercase text-xs font-bold flex items-center rounded-sm'>
-              upcoming
-            </span>
+                            upcoming
+                        </span>
                     )}
                 </div>
 
@@ -80,7 +80,7 @@ function ReservationCard({booking, onDelete}) {
                             className='group flex items-center gap-2 uppercase text-xs font-bold text-primary-300 border-b border-primary-800 flex-grow px-3 hover:bg-accent-600 transition-colors hover:text-primary-900'
                         >
                             <PencilSquareIcon
-                                className='h-5 w-5 text-primary-600 group-hover:text-primary-800 transition-colors'/>
+                                className='h-5 w-5 text-primary-600 group-hover:text-primary-800 transition-colors' />
                             <span className='mt-1'>Edit {id}</span>
                         </Link>
                         <DeleteReservation bookingId={id} onDelete={onDelete} />

@@ -1,6 +1,7 @@
 import NextAuth from "next-auth";
 import Google from 'next-auth/providers/google'
 import { createGuest, getGuest } from "@/app/_lib/data-service";
+import { supabase } from "./supabase";
 
 const authConfig = {
     providers: [
@@ -23,12 +24,32 @@ const authConfig = {
         async signIn({ user, account, profile }) {
             try {
                 console.log('Sign-in attempt:', { email: user.email, name: user.name });
+                // Create the user in Supabase Auth
+                const { data: authData, error: authError } = await supabase.auth.signUp({
+                    email: user.email,
+                    password: crypto.randomUUID(), // random password since we're using OAuth
+                    options: {
+                        data: {
+                            full_name: user.name,
+                            avatar_url: user.image
+                        }
+                    }
+                });
+
+                if (authError) {
+                    console.error('Supabase auth error:', authError);
+                    return false;
+                }
+
+                // Then create the guest record
                 const existingGuest = await getGuest(user.email);
-                console.log('Existing guest:', existingGuest);
 
                 if (!existingGuest) {
-                    console.log('Creating new guest');
-                    await createGuest({ email: user.email, full_name: user.name });
+                    await createGuest({
+                        email: user.email,
+                        full_name: user.name,
+                        auth_id: authData.user.id // Link to Supabase auth user
+                    });
                 }
 
                 return true;

@@ -79,18 +79,38 @@ export async function getBooking(id) {
 }
 
 export async function getBookings(guestId) {
-    const { data, error, count } = await supabase
-        .from('two_bookings')
-        // We actually also need data on the cabins as well. But let's ONLY take the data that we actually need, in order to reduce downloaded data.
-        .select('id, created_at, start_date, end_date, num_nights, num_guests, total_price, guest_id, cabin_id, two_cabins(name, image)')
-        .eq('guest_id', guestId)
-        .order('start_date');
-
-    if (error) {
-        console.error(error);
-        throw new Error('Bookings could not get loaded');
+    if (!guestId) {
+        console.error('No guestId provided to getBookings');
+        throw new Error('Guest ID is required');
     }
 
+    console.log('Fetching bookings for guestId:', guestId);
+
+    const { data, error } = await supabase
+        .from('two_bookings')
+        .select(`
+            id,
+            created_at,
+            start_date,
+            end_date,
+            num_nights,
+            num_guests,
+            total_price,
+            guest_id,
+            cabin_id,
+            two_cabins (
+                name,
+                image
+            )
+        `)
+        .eq('guest_id', guestId);
+
+    if (error) {
+        console.error('Supabase error:', error);
+        throw new Error(`Bookings could not get loaded: ${error.message}`);
+    }
+
+    console.log('Bookings found:', data);
     return data;
 }
 
@@ -150,10 +170,14 @@ export async function getCountries() {
 // CREATE
 
 export async function createGuest(newGuest) {
-    const { data, error } = await supabase.from('two_guests').insert([newGuest]);
+    const { data, error } = await supabase
+        .from('two_guests')
+        .insert([newGuest])
+        .select()
+        .single();
 
     if (error) {
-        console.error(error);
+        console.error('Error creating guest:', error);
         throw new Error('Guest could not be created');
     }
 

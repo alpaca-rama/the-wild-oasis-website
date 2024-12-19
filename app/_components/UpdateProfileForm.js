@@ -1,17 +1,19 @@
 'use client';
 
-import {useState} from "react";
-import {updateProfile} from "@/app/_lib/actions";
+import { useState } from "react";
+import { updateProfile } from "@/app/_lib/actions";
 import SubmitButton from "@/app/_components/SubmitButton";
 
-export default function UpdateProfileForm({guest, children}) {
+export default function UpdateProfileForm({ guest, children }) {
     const [count, setCount] = useState();
-    const {full_name, email, nationality, national_id, country_flag} = guest;
-
-    // CHANGE
-    // const countryFlag = "pt.jpg";
-    // const countryFlag = "https://upload.wikimedia.org/wikipedia/commons/5/5c/Flag_of_Portugal.svg";
-    // const nationality = "portugal";
+    // Add default empty object if guest is null
+    const {
+        full_name = '',
+        email = '',
+        nationality = '',
+        national_id = '',
+        country_flag = ''
+    } = guest || {};
 
     return (
         <form
@@ -22,7 +24,7 @@ export default function UpdateProfileForm({guest, children}) {
                 <label>Full name</label>
                 <input
                     disabled
-                    defaultValue={full_name}
+                    defaultValue={full_name || ''}
                     name={'full_name'}
                     className="px-5 py-3 bg-primary-200 text-primary-800 w-full shadow-sm rounded-sm disabled:cursor-not-allowed disabled:bg-gray-600 disabled:text-gray-400"
                 />
@@ -32,7 +34,7 @@ export default function UpdateProfileForm({guest, children}) {
                 <label>Email address</label>
                 <input
                     disabled
-                    defaultValue={email}
+                    defaultValue={email || ''}
                     name={'email'}
                     className="px-5 py-3 bg-primary-200 text-primary-800 w-full shadow-sm rounded-sm disabled:cursor-not-allowed disabled:bg-gray-600 disabled:text-gray-400"
                 />
@@ -42,7 +44,7 @@ export default function UpdateProfileForm({guest, children}) {
                 <div className="flex items-center justify-between">
                     <label htmlFor="nationality">Where are you from?</label>
                     <img
-                        src={country_flag}
+                        src={country_flag || ''}
                         alt="Country flag"
                         className="h-5 rounded-sm"
                     />
@@ -53,7 +55,7 @@ export default function UpdateProfileForm({guest, children}) {
             <div className="space-y-2">
                 <label htmlFor="nationalID">National ID number</label>
                 <input
-                    defaultValue={national_id}
+                    defaultValue={national_id || ''}
                     name={'national_id'}
                     className="px-5 py-3 bg-primary-200 text-primary-800 w-full shadow-sm rounded-sm"
                 />
