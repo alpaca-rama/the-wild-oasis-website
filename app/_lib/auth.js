@@ -24,32 +24,24 @@ const authConfig = {
         async signIn({ user, account, profile }) {
             try {
                 console.log('Sign-in attempt:', { email: user.email, name: user.name });
-                // Create the user in Supabase Auth
-                const { data: authData, error: authError } = await supabase.auth.signUp({
-                    email: user.email,
-                    password: crypto.randomUUID(), // random password since we're using OAuth
-                    options: {
-                        data: {
-                            full_name: user.name,
-                            avatar_url: user.image
-                        }
-                    }
+                const existingGuest = await getGuest(user.email);
+
+                if (!existingGuest) {
+                    console.log('Creating new guest');
+                    await createGuest({
+                        email: user.email,
+                        full_name: user.name
+                    });
+                }
+
+                // Sign in to Supabase with Google OAuth token
+                const { error: authError } = await supabase.auth.signInWithIdToken({
+                    provider: 'google',
+                    token: account.id_token,
                 });
 
                 if (authError) {
                     console.error('Supabase auth error:', authError);
-                    return false;
-                }
-
-                // Then create the guest record
-                const existingGuest = await getGuest(user.email);
-
-                if (!existingGuest) {
-                    await createGuest({
-                        email: user.email,
-                        full_name: user.name,
-                        auth_id: authData.user.id // Link to Supabase auth user
-                    });
                 }
 
                 return true;
@@ -61,7 +53,7 @@ const authConfig = {
         async session({ session, user }) {
             try {
                 const guest = await getGuest(session.user.email);
-                session.user.guest_id = guest.id;
+                session.user.guest_id = guest?.id;
                 return session;
             } catch (error) {
                 console.error('Session error:', error);
@@ -69,13 +61,9 @@ const authConfig = {
             }
         },
     },
-    pages: {
-        signIn: '/login',
-        error: '/auth/error'
-    },
     debug: true,
     trustHost: true
-}
+};
 
 export const {
     auth,
